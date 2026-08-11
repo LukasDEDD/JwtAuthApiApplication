@@ -9,7 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "users")
+@Table(name = "app_user")
 
 public class UserEntity implements UserDetails {
 
