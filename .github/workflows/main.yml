@@ -1,0 +1,69 @@
+name: Java CI Pipeline
+
+on:
+  push:
+    branches:
+      - master
+
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: JWTAuthApi
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U postgres -d JWTAuthApi"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Build and Test
+        working-directory: ./JWTAuthApi
+        env:
+          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/JWTAuthApi
+          SPRING_DATASOURCE_USERNAME: postgres
+          SPRING_DATASOURCE_PASSWORD: postgres
+        run: mvn clean verify
+
+      - name: SpotBugs scan
+        working-directory: ./JWTAuthApi
+        run: mvn spotbugs:spotbugs
+
+      - name: Log in to Docker Hub
+
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        uses: docker/login-action@v3
+        with:
+         username: ${{ secrets.DOCKERHUB_USERNAME }}
+         password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build Docker image
+        working-directory: ./JWTAuthApi
+        run: docker build -t jwt-app .
+
+      - name: Push Docker image to Docker Hub
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        run: |
+          docker tag jwt-app ${{ secrets.DOCKERHUB_USERNAME }}/jwt-app:latest
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/jwt-app:latest
