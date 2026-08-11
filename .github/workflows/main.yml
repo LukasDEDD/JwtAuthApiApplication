@@ -17,13 +17,13 @@ jobs:
       postgres:
         image: postgres:16
         env:
-          POSTGRES_DB: JWTAuthApi
+          POSTGRES_DB: JWTAuthAPI
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
         ports:
           - 5432:5432
         options: >-
-          --health-cmd="pg_isready -U postgres -d JWTAuthApi"
+          --health-cmd="pg_isready -U postgres -d JWTAuthAPI"
           --health-interval=10s
           --health-timeout=5s
           --health-retries=5
@@ -39,15 +39,15 @@ jobs:
           distribution: 'temurin'
 
       - name: Build and Test
-        working-directory: ./JWTAuthApi
+        working-directory: ./JWTAuthAPI
         env:
-          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/JWTAuthApi
+          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/JWTAuthAPI
           SPRING_DATASOURCE_USERNAME: postgres
           SPRING_DATASOURCE_PASSWORD: postgres
         run: mvn clean verify
 
       - name: SpotBugs scan
-        working-directory: ./JWTAuthApi
+        working-directory: ./JWTAuthAPI
         run: mvn spotbugs:spotbugs
 
       - name: Log in to Docker Hub
@@ -59,7 +59,7 @@ jobs:
          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build Docker image
-        working-directory: ./JWTAuthApi
+        working-directory: ./JWTAuthAPI
         run: docker build -t jwt-app .
 
       - name: Push Docker image to Docker Hub
