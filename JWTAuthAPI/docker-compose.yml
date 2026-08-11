@@ -6,15 +6,15 @@ services:
     restart: always
 
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 820414Got
-      POSTGRES_DB: JWTAuthApi
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
 
     ports:
       - "5432:5432"
 
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - jwt_postgres_data:/var/lib/postgresql/data
 
 
     healthcheck:
@@ -40,10 +40,11 @@ services:
 
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/JWTAuthApi
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: 820416Got
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+
 
 
 
 volumes:
-  postgres_data:
+  jwt_postgres_data:
