@@ -7,7 +7,7 @@ import org.springframework.test.context.ActiveProfiles;
 @SpringBootTest
 @ActiveProfiles("test")
 
-class JwtAuthApiApplicationTests {
+class JwtAuthAPIApplicationTests {
 
 	@Test
 	void contextLoads() {
