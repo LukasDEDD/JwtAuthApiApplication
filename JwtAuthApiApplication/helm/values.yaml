@@ -1,0 +1,131 @@
+replicaCount: 1
+
+image:
+  repository: docker.io/lukasdedd/jwt-app
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+imagePullSecrets: []
+
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  automount: true
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+
+podLabels:
+  app: jwt-app
+
+
+podSecurityContext: {}
+
+
+securityContext: {}
+
+
+service:
+  type: ClusterIP
+  port: 8080
+
+ingress:
+  enabled: true
+  className: ""
+  annotations: {}
+
+  hosts:
+    - host: jwt.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+
+httpRoute:
+  enabled: false
+  annotations: {}
+  parentRefs:
+  - name: gateway
+    sectionName: http
+  hostnames:
+  - jwt.local.local
+  rules:
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /
+
+resources:
+  requests:
+    cpu: 200m
+    memory: 512Mi
+  limits:
+   cpu: 1000m
+  memory: 1Gi
+
+
+livenessProbe:
+  httpGet:
+    path: /actuator/health
+    port: 8080
+  initialDelaySeconds: 90
+  periodSeconds: 20
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+readinessProbe:
+  httpGet:
+    path: /actuator/health
+    port: 8080
+  initialDelaySeconds: 60
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 6
+startupProbe:
+  httpGet:
+    path: /actuator/health
+    port: 8080
+  initialDelaySeconds: 10
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 12
+
+autoscaling:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+
+volumes: []
+
+volumeMounts: []
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+postgresql:
+  enabled: true
+
+  image:
+    repository: postgres
+    tag: "16"
+
+  database: JWTAuthApi
+  username: postgres
+  password: postgres
+  service:
+    port: 5432
+
+database:
+  url: jdbc:postgresql://postgres:5432/JWTAuthApi
+  username: postgres
+  password: postgres
+
+
+

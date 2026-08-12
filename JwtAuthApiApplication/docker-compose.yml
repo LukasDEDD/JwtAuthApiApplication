@@ -44,7 +44,5 @@ services:
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
 
 
-
-
 volumes:
   jwt_postgres_data:
