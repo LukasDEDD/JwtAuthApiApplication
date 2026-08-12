@@ -24,9 +24,7 @@ podLabels:
 
 podSecurityContext: {}
 
-
 securityContext: {}
-
 
 service:
   type: ClusterIP
@@ -65,7 +63,6 @@ resources:
   limits:
    cpu: 1000m
   memory: 1Gi
-
 
 livenessProbe:
   httpGet:
