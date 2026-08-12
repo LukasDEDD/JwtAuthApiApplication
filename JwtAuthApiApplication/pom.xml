@@ -9,10 +9,10 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.example</groupId>
-	<artifactId>JWTAuthAPI</artifactId>
+	<artifactId>JwtAuthApiApplication</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>JWTAuthAPI</name>
-	<description>JWTAuthAPI - security</description>
+	<name>JwtAuthApiApplication</name>
+	<description>JwtAuthApiApplication - security</description>
 	<url/>
 	<licenses>
 		<license/>
