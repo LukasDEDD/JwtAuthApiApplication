@@ -366,6 +366,16 @@ Authorization: Bearer <JWT>
   - updatedAt
 
 ---
+## Flyway Database Migrations
+
+This project uses Flyway to manage and version database schema changes. All SQL migration files are located in `src/main/resources/db/migration` and must follow the naming convention `V<version>__<description>.sql` (for example, `V1__create_app_user.sql`). When the application starts, Flyway checks the `flyway_schema_history` table, compares the applied migrations with the available files, and automatically executes any new migrations in the correct order. This ensures that the database schema always matches the current version of the application.
+
+The initial migration creates the `app_user` table, which stores user information such as first name, last name, email, password, role, and timestamp fields. To add a new migration, simply create another SQL file (e.g., `V2__add_refresh_token_table.sql`) in the migration directory. Flyway will detect and apply it automatically on the next application startup.
+
+Flyway configuration is defined in `application.properties`:
+
+
+---
 
 # Configuration
 

@@ -120,6 +120,11 @@ Spring Boot REST API
   v
 PostgreSQL
 ```
+---
+
+## Flyway Migrations
+
+Flyway is used to version and manage database schema changes. All SQL migration files are stored in `src/main/resources/db/migration` and follow the naming pattern `V<version>__<description>.sql`. Flyway automatically executes any new migrations on application startup and records them in the `flyway_schema_history` table. The project currently includes a migration that creates the `app_user` table used for storing user account data.
 
 ---
 
