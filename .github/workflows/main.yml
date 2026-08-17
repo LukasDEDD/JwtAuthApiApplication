@@ -30,10 +30,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
 
       - name: Setup Java
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v4
         with:
           java-version: '21'
           distribution: 'temurin'
@@ -50,20 +50,34 @@ jobs:
         working-directory: ./JwtAuthApiApplication
         run: mvn spotbugs:spotbugs
 
-      - name: Log in to Docker Hub
 
+      - name: Azure Login
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-        uses: docker/login-action@v3
+        uses: azure/login@v2
         with:
-         username: ${{ secrets.DOCKERHUB_USERNAME }}
-         password: ${{ secrets.DOCKERHUB_TOKEN }}
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+
+      - name: Log in to ACR
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        run: |
+          az acr login --name lukasjwt
+
 
       - name: Build Docker image
         working-directory: ./JwtAuthApiApplication
-        run: docker build -t jwt-app .
+        run: docker build -t lukasjwt.azurecr.io/jwt-app:${{ github.sha }} .
 
-      - name: Push Docker image to Docker Hub
+
+      - name: Push image to ACR
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-        run: |
-          docker tag jwt-app ${{ secrets.DOCKERHUB_USERNAME }}/jwt-app:latest
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/jwt-app:latest
+        run: docker push lukasjwt.azurecr.io/jwt-app:${{ github.sha }}
+
+
+      - name: Deploy Container App
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        uses: azure/container-apps-deploy-action@v1
+        with:
+          containerAppName: jwtauthapi
+          resourceGroup: JWTAuthApi
+          imageToDeploy: lukasjwt.azurecr.io/jwt-app:${{ github.sha }}
