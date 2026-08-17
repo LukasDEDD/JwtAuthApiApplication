@@ -3,9 +3,11 @@ package com.example.JWTAuthAPI;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -27,21 +29,34 @@ public class SecurityConfig {
     this.userService = userService;
     this.jwtAuthFilter = jwtAuthFilter;
   }
+  @Bean
+  @Order(1)
+  public SecurityFilterChain authFilterChain(HttpSecurity http) throws Exception {
+    http
+      .securityMatcher("/auth/**")
+      .csrf(csrf -> csrf.disable())
+      .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+      .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
+      .authenticationProvider(authenticationProvider());
+
+    return http.build();
+  }
 
   @Bean
-  public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-
+  @Order(2)
+  public SecurityFilterChain apiFilterChain(HttpSecurity http) throws Exception {
     http
       .csrf(csrf -> csrf.disable())
+      .sessionManagement(session ->
+        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
       .authorizeHttpRequests(auth -> auth
-        .requestMatchers("/auth/**").permitAll()
+        .requestMatchers("/actuator/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
         .anyRequest().authenticated()
       )
-      .sessionManagement(session ->
-        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-      )
-      .authenticationProvider(authenticationProvider())
-      .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+
+      .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+
+      .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));
 
     return http.build();
   }
