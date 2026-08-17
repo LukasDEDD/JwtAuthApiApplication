@@ -51,6 +51,7 @@ jobs:
         run: mvn spotbugs:spotbugs
 
 
+
       - name: Azure Login
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         uses: azure/login@v2
