@@ -50,29 +50,24 @@ jobs:
         working-directory: ./JwtAuthApiApplication
         run: mvn spotbugs:spotbugs
 
-
       - name: Azure Login
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         uses: azure/login@v2
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-
       - name: Log in to ACR
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         run: |
           az acr login --name lukasjwt
 
-
       - name: Build Docker image
         working-directory: ./JwtAuthApiApplication
         run: docker build -t lukasjwt.azurecr.io/jwt-app:${{ github.sha }} .
 
-
       - name: Push image to ACR
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         run: docker push lukasjwt.azurecr.io/jwt-app:${{ github.sha }}
-
 
       - name: Deploy Container App
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
@@ -81,3 +76,5 @@ jobs:
           containerAppName: jwtauthapi
           resourceGroup: JWTAuthApi
           imageToDeploy: lukasjwt.azurecr.io/jwt-app:${{ github.sha }}
+          acrUsername: ${{ secrets.ACR_USERNAME }}
+          acrPassword: ${{ secrets.ACR_PASSWORD }}
