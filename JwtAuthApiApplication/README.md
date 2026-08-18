@@ -592,7 +592,75 @@ Complete backend + DevOps learning project:
 - Helm  
 
 ---
+# JWTAuthApi – Azure Deployment Documentation
 
+This project is a Spring Boot backend application providing JWT‑based authentication and user management. The application is fully containerized using Docker and deployed to Microsoft Azure.
+
+## Architecture Overview
+
+The application runs inside Azure Container Apps and uses Azure Container Registry (ACR) for storing container images. The database layer is provided by Azure Database for PostgreSQL – Flexible Server.
+
+### Azure Services Used
+- Azure Container Registry (ACR)
+- Azure Container Apps
+- Azure Database for PostgreSQL – Flexible Server
+- Azure Monitor (logging and diagnostics)
+
+## Database Configuration
+
+The application connects to an Azure‑hosted PostgreSQL database using SSL. Connection details are provided through environment variables:
+
+- SPRING_DATASOURCE_URL
+- SPRING_DATASOURCE_USERNAME
+- SPRING_DATASOURCE_PASSWORD
+---
+Example configuration in `application.properties`:
+
+```
+spring.datasource.url=${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/JWTAuthApi}  
+spring.datasource.username=${SPRING_DATASOURCE_USERNAME:postgres}  
+spring.datasource.password=${SPRING_DATASOURCE_PASSWORD:}  
+spring.jpa.hibernate.ddl-auto=none  
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+
+spring.flyway.enabled=true  
+spring.flyway.baseline-on-migrate=true  
+spring.flyway.locations=classpath:db/migration
+```
+---
+## Deployment Process
+
+### 1. Build Docker Image
+docker build -t <registry>/jwt-app:latest .
+
+### 2. Push Image to Azure Container Registry
+docker push <registry>/jwt-app:latest
+
+### 3. Deploy to Azure Container Apps
+The application is deployed as a container with startup, readiness, and liveness probes configured to ensure stable operation.
+
+### 4. Database Connectivity
+The application connects to Azure Database for PostgreSQL using SSL:
+
+sslmode=require
+
+Environment variables are injected directly into the container revision configuration.
+
+## Health Probes
+
+The application uses:
+- Startup probe
+- Readiness probe
+- Liveness probe
+
+These probes ensure that the application starts correctly, becomes ready for traffic, and stays healthy during runtime.
+
+## Container Information
+
+The application listens on port 8080 inside the container.
+
+
+---
 # License
 
 Educational & portfolio project.

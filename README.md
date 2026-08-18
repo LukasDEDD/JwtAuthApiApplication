@@ -128,6 +128,26 @@ Flyway is used to version and manage database schema changes. All SQL migration 
 
 ---
 
+# JWTAuthApi – Azure Deployment
+
+This Spring Boot application is deployed in Microsoft Azure using Azure Container Apps. The container image is stored in Azure Container Registry.
+
+The application uses Azure Database for PostgreSQL as its primary data storage. Connection details are provided through environment variables:
+
+SPRING_DATASOURCE_URL  
+SPRING_DATASOURCE_USERNAME  
+SPRING_DATASOURCE_PASSWORD
+```
+Datasource configuration:
+
+spring.datasource.url=${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/JWTAuthApi}
+spring.datasource.username=${SPRING_DATASOURCE_USERNAME:postgres}
+spring.datasource.password=${SPRING_DATASOURCE_PASSWORD:}
+
+The application runs on port 8080.
+```
+---
+
 # License
 
 This project is for learning and portfolio purposes.
