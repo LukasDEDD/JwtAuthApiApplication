@@ -146,6 +146,7 @@ spring.datasource.password=${SPRING_DATASOURCE_PASSWORD:}
 
 The application runs on port 8080.
 ```
+
 ---
 
 # License
